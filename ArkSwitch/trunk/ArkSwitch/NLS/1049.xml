@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ArkSwitch version="1.1.0">
+  <!-- Translation by mr.First on xda-developers -->
+  <Page name="Main">
+    <String name="Programs" value="Приложения:"/>
+    <String name="MemoryUsage" value="Использ. памяти: {0} ({1}%)"/>
+    <String name="FreeTotalBar" value="{0} свободно от {1}"/>
+    <String name="CloseAll" value="Закр. все"/>
+    <String name="Menu" value="Меню"/>
+    <String name="MenuSwitchTo" value="Переключиться на"/>
+    <String name="MenuCloseTask" value="Закрыть приложение"/>
+    <String name="MenuTaskDetails" value="Детали приложения"/>
+    <String name="MenuOptions" value="Опции"/>
+    <String name="MenuActivationField" value="Поле активации..."/>
+    <String name="MenuQuit" value="Закрыть ArkSwitch"/>
+    <String name="CloseAllTitle" value="Закрыть все?"/>
+    <String name="CloseAllMsg" value="Вы уверены что хотите закрыть все открытые приложения?"/>
+    <String name="ActivationFieldNotAvailableMsg" value="Это действие не доступно в режиме совместимости с WM6.5."/>
+  </Page>
+  <Page name="AppInfo">
+    <String name="Title" value="Информация о программе"/>
+    <String name="LocatedIn" value="Находится в:"/>
+    <String name="MemoryUsage" value="Использование памяти:"/>
+    <String name="EfficiencyIndex" value="Эффективность использования памяти:"/>
+    <String name="Exclude" value="Исключить..."/>
+    <String name="Kill" value="Закрыть"/>
+    <String name="KillConfirmTitle" value="Закрыть принудительно?"/>
+    <String name="KillConfirmMsg" value="Принудительное закрытие процесса. Вы уверенны что хотите продолжить?"/>
+  </Page>
+  <Page name="ExcludeEXE">
+    <String name="Title" value="Исключить EXE"/>
+    <String name="ExplanationText" value="Пожалуйста введите полный путь и имя процесса который вы хотите добавить в исключения. Все окна этого процесса будут скрыты из ArkSwitch."/>
+    <String name="OK" value="Ок"/>
+    <String name="Cancel" value="Отмена"/>
+  </Page>
+  <Page name="Options">
+    <String name="Title" value="Опции"/>
+    <String name="RunAtBoot" value="Автозагрузка"/>
+    <String name="StartMenuIcons" value="Использ. иконок Меню Пуск"/>
+    <String name="ToolsShortcut" value="Ярлык в Tools"/>
+    <String name="WM65Compat" value="Совместим. с WM6.5"/>
+    <String name="Exclusions" value="Исключения"/>
+    <String name="WM65Warning" value="В этом режиме при нажатии на верхнюю панель ArkSwitch не будет запускаться!"/>
+    <String name="RestartChanges" value="Чтобы изменения вступили в силу, перезагрузите ArkSwitch."/>
+  </Page>
+  <Page name="Exclusions">
+    <String name="Title" value="Исключения"/>
+    <String name="AddNew" value="Добавить"/>
+    <String name="Remove" value="Удалить"/>
+  </Page>
+  <Page name="ActivationRelocation">
+    <String name="Title" value="Местоположение"/>
+    <String name="Save" value="Сохранить"/>
+    <String name="Discard" value="Сбросить"/>
+  </Page>
+</ArkSwitch>

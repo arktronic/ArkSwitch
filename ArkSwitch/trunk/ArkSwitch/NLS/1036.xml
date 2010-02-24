@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ArkSwitch version="1.1.0">
+  <!-- Translation by crm4 on xda-developers -->
+  <Page name="Main">
+    <String name="Programs" value="Programmes:"/>
+    <String name="MemoryUsage" value="Utilisation mémoire: {0} ({1}%)"/>
+    <String name="FreeTotalBar" value="{0} libre sur {1}"/>
+    <String name="CloseAll" value="Tout fermer"/>
+    <String name="Menu" value="Menu"/>
+    <String name="MenuSwitchTo" value="Basculer vers"/>
+    <String name="MenuCloseTask" value="Fin de tâche"/>
+    <String name="MenuTaskDetails" value="Détails de la tâche"/>
+    <String name="MenuOptions" value="Options"/>
+    <String name="MenuActivationField" value="Zone d'activation..."/>
+    <String name="MenuQuit" value="Quitter ArkSwitch"/>
+    <String name="CloseAllTitle" value="Tout fermer?"/>
+    <String name="CloseAllMsg" value="Etes-vous sûr de vouloir fermer tous les programmes?"/>
+    <String name="ActivationFieldNotAvailableMsg" value="Cette action n'est pas disponible quand le mode de compatibilité WM6.5 est activé."/>
+  </Page>
+  <Page name="AppInfo">
+    <String name="Title" value="Info App"/>
+    <String name="LocatedIn" value="Emplacement:"/>
+    <String name="MemoryUsage" value="Utilisation mémoire:"/>
+    <String name="EfficiencyIndex" value="L'efficacité d'utilisation de la mémoire:"/>
+    <String name="Exclude" value="Exclure..."/>
+    <String name="Kill" value="Terminer"/>
+    <String name="KillConfirmTitle" value="Forcer fermeture?"/>
+    <String name="KillConfirmMsg" value="Il est dangereux de forcer la fermeture d'un process. Etes-vous sûr de vouloir continuer?"/>
+  </Page>
+  <Page name="ExcludeEXE">
+    <String name="Title" value="Exclure EXE"/>
+    <String name="ExplanationText" value="Saisir le chemin et le nom du process que vous voulez exclure. Toutes les fênetres associées à ce process seront invisibles dans ArkSwitch."/>
+    <String name="OK" value="OK"/>
+    <String name="Cancel" value="Annuler"/>
+  </Page>
+  <Page name="Options">
+    <String name="Title" value="Options"/>
+    <String name="RunAtBoot" value="Exécuter au démarrage"/>
+    <String name="StartMenuIcons" value="Icones du menu démarrer"/>
+	<String name="StartMenuIcons" value="Utiliser icones menu"/>
+    <String name="ToolsShortcut" value="Raccourci dans Tools"/>
+    <String name="WM65Compat" value="Compatibilité WM6.5"/>
+    <String name="Exclusions" value="Exclusions"/>
+    <String name="WM65Warning" value="Dans ce mode, un click dans la bar du haut n'affichera pas ArkSwitch!"/>
+    <String name="RestartChanges" value="Pour que les modifications soient prises en compte, veuillez redémarrer ArkSwitch."/>
+  </Page>
+  <Page name="Exclusions">
+    <String name="Title" value="Exclusions"/>
+    <String name="AddNew" value="Ajouter"/>
+    <String name="Remove" value="Supprimer"/>
+  </Page>
+  <Page name="ActivationRelocation">
+    <String name="Title" value="Déplacement ZA"/>
+    <String name="Save" value="Sauver"/>
+    <String name="Discard" value="Annuler"/>
+  </Page>
+</ArkSwitch>
