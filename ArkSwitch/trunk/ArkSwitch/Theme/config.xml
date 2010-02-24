@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ArkSwitchTheme version="1.0">
+
+  <!-- Required values: -->
+
+  <StatusBarTextColorPrimary>230,230,230</StatusBarTextColorPrimary>
+  <StatusBarTextColorSecondary>143,143,143</StatusBarTextColorSecondary>
+
+  <ListTextColorPrimary>0,0,0</ListTextColorPrimary>
+  <ListTextColorPrimarySelected>0,0,0</ListTextColorPrimarySelected>
+  <ListTextColorSecondary>139,138,138</ListTextColorSecondary>
+  <ListTextColorSecondarySelected>139,138,138</ListTextColorSecondarySelected>
+
+  <AppInfoTextColorPrimary>0,0,0</AppInfoTextColorPrimary>
+  <AppInfoTextColorSecondary>139,138,138</AppInfoTextColorSecondary>
+
+  <BackgroundColor>241,241,241</BackgroundColor>
+  
+  <AppInfoBackgroundColor>255,255,255</AppInfoBackgroundColor>
+  <AppInfoDelimiterColor>241,241,241</AppInfoDelimiterColor>
+
+  <!-- Optional values: -->
+
+  <ListItemBackgroundColor>255,255,255</ListItemBackgroundColor>
+  <ListSelectionRectangleColor>220,240,255</ListSelectionRectangleColor>
+  <ListSelectionRectangleImage></ListSelectionRectangleImage>
+
+  <BackgroundImage></BackgroundImage>
+  <AppInfoBackgroundImage></AppInfoBackgroundImage>
+
+</ArkSwitchTheme>

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ArkSwitch version="1.1.0">
+  <!--
+  *** Translation instructions ***
+  
+  1. Make a copy of this file, and name it "[LCID].xml", where [LCID] is a decimal (not hex!) locale number. See http://www.science.co.il/language/Locale-Codes.asp?s=decimal
+  2. Change all the "value" attributes to contain your language's text. Make sure you keep all of the braced numbers: {0}, {1}, etc. !!!
+  3. Copy the new XML file to your device, next to 1033.xml, and enjoy!
+  
+  NOTE: If your device's LCID is set improperly, or you wish to use a custom language, you may override ArkSwitch's detection by setting:
+  [HKCU\Software\ARKconcepts\ArkSwitch]
+  "OverrideLCID" = "12345" (this must be a string value type)
+  -->
+  <Page name="Main">
+    <String name="Programs" value="Programs:"/>
+    <String name="MemoryUsage" value="Memory usage: {0} ({1}%)"/>
+    <String name="FreeTotalBar" value="{0} free out of {1}"/>
+    <String name="CloseAll" value="Close All"/>
+    <String name="Menu" value="Menu"/>
+    <String name="MenuSwitchTo" value="Switch To"/>
+    <String name="MenuCloseTask" value="Close Task"/>
+    <String name="MenuTaskDetails" value="Task Details"/>
+    <String name="MenuOptions" value="Options"/>
+    <String name="MenuActivationField" value="Activation Field..."/>
+    <String name="MenuQuit" value="Quit ArkSwitch"/>
+    <String name="CloseAllTitle" value="Close all?"/>
+    <String name="CloseAllMsg" value="Are you sure you want to close all open programs?"/>
+    <String name="ActivationFieldNotAvailableMsg" value="This action is not available while WM6.5 compatibility mode is turned on."/>
+  </Page>
+  <Page name="AppInfo">
+    <String name="Title" value="App Info"/>
+    <String name="LocatedIn" value="Located in:"/>
+    <String name="MemoryUsage" value="Memory (heap) usage:"/>
+    <String name="EfficiencyIndex" value="Efficiency index:"/>
+    <String name="Exclude" value="Exclude..."/>
+    <String name="Kill" value="Kill"/>
+    <String name="KillConfirmTitle" value="Force kill?"/>
+    <String name="KillConfirmMsg" value="It is dangerous to forcefully kill a process. Are you sure you want to continue?"/>
+  </Page>
+  <Page name="ExcludeEXE">
+    <String name="Title" value="Exclude EXE"/>
+    <String name="ExplanationText" value="Please enter the full path and filename of the process you would like to exclude. All windows from that process will be hidden from ArkSwitch."/>
+    <String name="OK" value="OK"/>
+    <String name="Cancel" value="Cancel"/>
+  </Page>
+  <Page name="Options">
+    <String name="Title" value="Options"/>
+    <String name="RunAtBoot" value="Run at boot time"/>
+    <String name="StartMenuIcons" value="Use Start Menu icons"/>
+    <String name="ToolsShortcut" value="Enable Tools shortcut"/>
+    <String name="WM65Compat" value="WM6.5 compatibility"/>
+    <String name="Exclusions" value="Exclusions"/>
+    <String name="WM65Warning" value="Please note that in this mode, clicking on the top bar will NOT bring up ArkSwitch!"/>
+    <String name="RestartChanges" value="For changes to take effect, please restart ArkSwitch."/>
+  </Page>
+  <Page name="Exclusions">
+    <String name="Title" value="Exclusions"/>
+    <String name="AddNew" value="Add New"/>
+    <String name="Remove" value="Remove"/>
+  </Page>
+  <Page name="ActivationRelocation">
+    <String name="Title" value="AF Relocation"/>
+    <String name="Save" value="Save"/>
+    <String name="Discard" value="Discard"/>
+  </Page>
+</ArkSwitch>
