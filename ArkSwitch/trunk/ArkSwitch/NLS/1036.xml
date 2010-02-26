@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArkSwitch version="1.1.0">
+<ArkSwitch version="1.1.1">
   <!-- Translation by crm4 on xda-developers -->
   <Page name="Main">
     <String name="Programs" value="Programmes:"/>
