@@ -289,7 +289,7 @@ namespace ArkSwitch
                         if (!Program.ExcludedExes.Contains(cleanPath) && (!_exes.ContainsKey(cleanPath) || _exes[cleanPath] != window.Value) && cleanPath != @"\windows\gwes.exe" && cleanPath != @"\windows\shell32.exe")
                         {
                             _tasks.Add(new TaskItem { Title = window.Value ?? "", HWnd = window.Key, ProcessId = curProc, HeapSize = GetProcessMemory(curProc), ExePath = path });
-                            _exes.Add(cleanPath, window.Value);
+                            if(!_exes.ContainsKey(cleanPath)) _exes.Add(cleanPath, window.Value);
                         }
                     }
                 }
