@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ArkSwitch version="1.1.1">
+  <!-- Translation by teorouge on xda-developers -->
+  <Page name="Main">
+    <String name="Programs" value="Programmi:"/>
+    <String name="MemoryUsage" value="Memoria in uso: {0} ({1}%)"/>
+    <String name="FreeTotalBar" value="{0} su {1}"/>
+    <String name="CloseAll" value="Chiudi Tutto"/>
+    <String name="Menu" value="Menu"/>
+    <String name="MenuSwitchTo" value="Passa A"/>
+    <String name="MenuCloseTask" value="Chiudi Attività"/>
+    <String name="MenuTaskDetails" value="Dettaglio Attività"/>
+    <String name="MenuOptions" value="Opzioni"/>
+    <String name="MenuActivationField" value="Zona di Attivazione..."/>
+    <String name="MenuQuit" value="Esci da ArkSwitch"/>
+    <String name="CloseAllTitle" value="Chiudi tutto?"/>
+    <String name="CloseAllMsg" value="Vuoi davvero chiudere tutti i programmi aperti?"/>
+    <String name="ActivationFieldNotAvailableMsg" value="Non disponibile in Modalità Compatibile WM6.5."/>
+  </Page>
+  <Page name="AppInfo">
+    <String name="Title" value="App Info"/>
+    <String name="LocatedIn" value="In:"/>
+    <String name="MemoryUsage" value="Utilizzo Memoria (heap):"/>
+    <String name="EfficiencyIndex" value="Indice d'Efficienza:"/>
+    <String name="Exclude" value="Escludi..."/>
+    <String name="Kill" value="Forza chiusura"/>
+    <String name="KillConfirmTitle" value="Forzare?"/>
+    <String name="KillConfirmMsg" value="Non è consigliabile forzare la chiusura di un processo, confermi?"/>
+  </Page>
+  <Page name="ExcludeEXE">
+    <String name="Title" value="Escludi EXE"/>
+    <String name="ExplanationText" value="Inserire path completo e nome file del processo da escludere. Tutte le finestre di tale processo verranno ignorate da ArkSwitch."/>
+    <String name="OK" value="OK"/>
+    <String name="Cancel" value="Annulla"/>
+  </Page>
+  <Page name="Options">
+    <String name="Title" value="Opzioni"/>
+    <String name="RunAtBoot" value="Esegui all'avvio"/>
+    <String name="StartMenuIcons" value="Usa icone del menu Start"/>
+    <String name="ToolsShortcut" value="Attiva collegamento a Strumenti"/>
+    <String name="WM65Compat" value="Modalità compatibile WM6.5"/>
+    <String name="Exclusions" value="Esclusioni"/>
+    <String name="WM65Warning" value="Attenzione, così il click sulla barra in alto NON mostrerà ArkSwitch!"/>
+    <String name="RestartChanges" value="Per applicare le modifiche, riavviare ArkSwitch."/>
+  </Page>
+  <Page name="Exclusions">
+    <String name="Title" value="Esclusioni"/>
+    <String name="AddNew" value="Aggiungi"/>
+    <String name="Remove" value="Rimuovi"/>
+  </Page>
+  <Page name="ActivationRelocation">
+    <String name="Title" value="Muovi Zona d'Attivazione"/>
+    <String name="Save" value="Salva"/>
+    <String name="Discard" value="Annulla"/>
+  </Page>
+</ArkSwitch>
