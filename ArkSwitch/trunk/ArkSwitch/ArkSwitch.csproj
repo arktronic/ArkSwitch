@@ -154,6 +154,7 @@
     <Content Include="NLS\1036.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="NLS\1040.xml" />
     <Content Include="NLS\1049.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
