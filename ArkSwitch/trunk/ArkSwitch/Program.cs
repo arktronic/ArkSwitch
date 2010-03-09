@@ -113,6 +113,7 @@ namespace ArkSwitch
 
                 if(ProcessEventsInstance.EventType == 1)
                 {
+                    OpenNETCF.Windows.Forms.ApplicationEx.DoEvents();
                     TheForm.Invoke(new Action(TheForm.RefreshData));
                 }
             }
@@ -131,6 +132,7 @@ namespace ArkSwitch
                 TheForm.BringToFront();
                 TheForm.Activate();
 
+                OpenNETCF.Windows.Forms.ApplicationEx.DoEvents();
                 TheForm.Invoke(new Action(TheForm.RefreshData));
             }
         }

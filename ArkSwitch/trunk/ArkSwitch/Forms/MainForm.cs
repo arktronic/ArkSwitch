@@ -34,10 +34,7 @@ namespace ArkSwitch.Forms
 
         ListViewEx.WndHandler _handler;
 
-        uint _totalRam, _freeRam; 
         string _statusString;
-        bool _showingSlots;
-        bool _activated;
 
         /// <summary>
         /// Static constructor...
@@ -100,13 +97,7 @@ namespace ArkSwitch.Forms
                 _handler.DrawEvent += Handler_DrawEvent;
                 _handler.ClickEvent += Handler_ClickEvent;
             }
-            _activated = true;
             RefreshData();
-        }
-
-        private void MainForm_Deactivate(object sender, EventArgs e)
-        {
-            _activated = false;
         }
 
         /// <summary>
@@ -249,9 +240,7 @@ namespace ArkSwitch.Forms
                         }
                         catch(Exception ex)
                         {
-                            MessageBox.Show(
-                                "An error has occurred. ArkSwitch will try to continue. Please report this!" +
-                                Environment.NewLine + "Error: " + ex.Message);
+                            MessageBox.Show("An error has occurred. ArkSwitch will try to continue. Please report this!" + Environment.NewLine + "Error: " + ex.Message);
                         }
                         break;
                     case 1:
@@ -449,38 +438,29 @@ namespace ArkSwitch.Forms
                 {
                     lsvTasks.Items.Add(new ListViewItem("") { Tag = task });
                 }
-            }
 
-            // Refresh system summary.
-            RefreshSystemRamInfo();
+                // Refresh system summary.
+                RefreshSystemRamInfo();
+            }
         }
 
         internal void RefreshSystemRamInfo()
         {
-            _showingSlots = !_showingSlots;
-
-            if(_showingSlots)
-            {
-                var freeProcs = 32 - TaskMgmt.Instance.GetNumProcesses();
-                _statusString = string.Format(NativeLang.GetNlsString("Main", "FreeTotalBar"), freeProcs, "32");
-            }
-            else
-            {
-                // Showing RAM.
-                TaskMgmt.Instance.GetMemoryStatus(out _totalRam, out _freeRam);
-                _statusString = string.Format(NativeLang.GetNlsString("Main", "FreeTotalBar"), TaskMgmt.FormatMemoryString(_freeRam), TaskMgmt.FormatMemoryString(_totalRam));
-            }
+            var freeProcs = 32 - TaskMgmt.Instance.GetNumProcesses();
+            var newStatus = string.Format(NativeLang.GetNlsString("Main", "FreeTotalBar"), freeProcs, "32");
 
             try
             {
-                // Signal the PictureBox to redraw itself.
-                pbxTopBar.Invalidate();
-
-                // Tell the timer to start counting if the form is still visible and active.
-                if (this.Visible && _activated)
+                if (_statusString != newStatus)
                 {
+                    // This is a trick to continue updating the status bar after the user has done something.
+                    // It's needed for times when the OS takes a while to update its totals.
+                    tmrRamRefresh.Enabled = false;
                     tmrRamRefresh.Enabled = true;
                 }
+                _statusString = newStatus;
+                // Signal the PictureBox to redraw itself.
+                pbxTopBar.Invalidate();
             }
             catch (ObjectDisposedException)
             {

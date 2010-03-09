@@ -359,29 +359,6 @@ namespace ArkSwitch
         }
 
         /// <summary>
-        /// Returns the calculated slot number of the specified memory address.
-        /// </summary>
-        /// <param name="memoryOffset"></param>
-        /// <returns></returns>
-        public int GetSlotNumber(uint memoryOffset)
-        {
-            return (int)(memoryOffset / 0x02000000);
-        }
-
-        public static string FormatMemoryString(uint amt)
-        {
-            string unit = "";
-
-            if (amt >= 1024)
-            {
-                amt /= 1024;
-                unit = " K";
-            }
-
-            return String.Format("{0:N0}{1}", amt, unit);
-        }
-
-        /// <summary>
         /// Returns the full EXE pathname of the specified process.
         /// </summary>
         /// <param name="procId"></param>
@@ -428,28 +405,6 @@ namespace ArkSwitch
             catch (Exception)
             {
                 return;
-            }
-        }
-
-        /// <summary>
-        /// Gets the global memory status information for the device.
-        /// </summary>
-        /// <param name="total"></param>
-        /// <param name="free"></param>
-        public void GetMemoryStatus(out uint total, out uint free)
-        {
-            try
-            {
-                var mem = new MEMORYSTATUS();
-                mem.dwLength = (uint)Marshal.SizeOf(mem);
-                GlobalMemoryStatus(ref mem);
-                total = mem.dwTotalPhys;
-                free = mem.dwAvailPhys;
-            }
-            catch (Exception)
-            {
-                total = 0;
-                free = 0;
             }
         }
     }
