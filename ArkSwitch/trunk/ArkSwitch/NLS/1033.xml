@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArkSwitch version="1.1.1">
+<ArkSwitch version="1.1.2">
   <!--
   *** Translation instructions ***
   
@@ -13,7 +13,6 @@
   -->
   <Page name="Main">
     <String name="Programs" value="Programs:"/>
-    <String name="MemoryUsage" value="Memory usage: {0} ({1}%)"/>
     <String name="FreeTotalBar" value="{0} free out of {1}"/>
     <String name="CloseAll" value="Close All"/>
     <String name="Menu" value="Menu"/>
@@ -30,8 +29,8 @@
   <Page name="AppInfo">
     <String name="Title" value="App Info"/>
     <String name="LocatedIn" value="Located in:"/>
-    <String name="MemoryUsage" value="Memory (heap) usage:"/>
-    <String name="EfficiencyIndex" value="Efficiency index:"/>
+    <String name="NumberOfModules" value="Number of modules:"/>
+    <String name="NumberOfThreads" value="Number of threads:"/>
     <String name="Exclude" value="Exclude..."/>
     <String name="Kill" value="Kill"/>
     <String name="KillConfirmTitle" value="Force kill?"/>

@@ -34,8 +34,10 @@ namespace ArkSwitch.Forms
 
         ListViewEx.WndHandler _handler;
 
-        uint _totalRam, _freeRam;
-        string _ramString;
+        uint _totalRam, _freeRam; 
+        string _statusString;
+        bool _showingSlots;
+        bool _activated;
 
         /// <summary>
         /// Static constructor...
@@ -98,7 +100,13 @@ namespace ArkSwitch.Forms
                 _handler.DrawEvent += Handler_DrawEvent;
                 _handler.ClickEvent += Handler_ClickEvent;
             }
+            _activated = true;
             RefreshData();
+        }
+
+        private void MainForm_Deactivate(object sender, EventArgs e)
+        {
+            _activated = false;
         }
 
         /// <summary>
@@ -112,7 +120,7 @@ namespace ArkSwitch.Forms
             using (Brush brushRight = new SolidBrush(Theming.StatusBarTextColorSecondary))
             {
                 e.Graphics.DrawString(NativeLang.GetNlsString("Main", "Programs"), MemoryBarFontLeft, brushLeft, new RectangleF(4, 0, pbxTopBar.Width - 4, pbxTopBar.Height - 2), MemoryBarStringFormatLeft);
-                e.Graphics.DrawString(_ramString, MemoryBarFontRight, brushRight, new RectangleF(0, 0, pbxTopBar.Width - 4, pbxTopBar.Height - 2), MemoryBarStringFormatRight);
+                e.Graphics.DrawString(_statusString, MemoryBarFontRight, brushRight, new RectangleF(0, 0, pbxTopBar.Width - 4, pbxTopBar.Height - 2), MemoryBarStringFormatRight);
             }
         }
 
@@ -174,12 +182,20 @@ namespace ArkSwitch.Forms
                                 }
                             }
                         }
-                        else if (Theming.ListItemBackgroundColor.HasValue)
+                        else // not selected
                         {
-                            using (var bg = new SolidBrush(Theming.ListItemBackgroundColor.Value))
+                            if(Theming.ListItemBackgroundImage != null)
                             {
-                                // Draw the deselected rectangle solid color, since we have it.
-                                graphics.FillRectangle(bg, (int)rect.X, (int)rect.Y + 1, (int)rect.Width, (int)rect.Height - 1);
+                                // Draw the deselected rectangle image, since we have one.
+                                graphics.DrawImageAlphaChannel(Theming.ListItemBackgroundImage, new Rectangle((int)rect.X, (int)rect.Y + 1, (int)rect.Width, (int)rect.Height - 1));
+                            }
+                            else if (Theming.ListItemBackgroundColor.HasValue)
+                            {
+                                using (var bg = new SolidBrush(Theming.ListItemBackgroundColor.Value))
+                                {
+                                    // Draw the deselected rectangle solid color, since we have that, but no image.
+                                    graphics.FillRectangle(bg, (int) rect.X, (int) rect.Y + 1, (int) rect.Width, (int) rect.Height - 1);
+                                }
                             }
                         }
                         break;
@@ -231,16 +247,18 @@ namespace ArkSwitch.Forms
                                 }
                             }
                         }
-                        catch
+                        catch(Exception ex)
                         {
-                            // Ignore...
+                            MessageBox.Show(
+                                "An error has occurred. ArkSwitch will try to continue. Please report this!" +
+                                Environment.NewLine + "Error: " + ex.Message);
                         }
                         break;
                     case 1:
                         // The second item is the task title and memory info.
 
                         // Generate the strings, determine their sizes, etc...
-                        var infoString = string.Format(NativeLang.GetNlsString("Main", "MemoryUsage"), TaskMgmt.FormatMemoryString(task.HeapSize), Math.Round(1f * task.HeapSize / _totalRam * 100, 1));
+                        var infoString = Path.GetFileName(task.ExePath);
                         var nameStringSize = graphics.MeasureString(task.Title, TaskListMainFont);
                         var infoStringSize = graphics.MeasureString(infoString, TaskListSubFont);
                         var combinedHeight = nameStringSize.Height + infoStringSize.Height + 1;
@@ -439,21 +457,30 @@ namespace ArkSwitch.Forms
 
         internal void RefreshSystemRamInfo()
         {
-            TaskMgmt.Instance.GetMemoryStatus(out _totalRam, out _freeRam);
-            var newStatus = string.Format(NativeLang.GetNlsString("Main", "FreeTotalBar"), TaskMgmt.FormatMemoryString(_freeRam), TaskMgmt.FormatMemoryString(_totalRam));
+            _showingSlots = !_showingSlots;
+
+            if(_showingSlots)
+            {
+                var freeProcs = 32 - TaskMgmt.Instance.GetNumProcesses();
+                _statusString = string.Format(NativeLang.GetNlsString("Main", "FreeTotalBar"), freeProcs, "32");
+            }
+            else
+            {
+                // Showing RAM.
+                TaskMgmt.Instance.GetMemoryStatus(out _totalRam, out _freeRam);
+                _statusString = string.Format(NativeLang.GetNlsString("Main", "FreeTotalBar"), TaskMgmt.FormatMemoryString(_freeRam), TaskMgmt.FormatMemoryString(_totalRam));
+            }
 
             try
             {
-                if (_ramString != newStatus)
-                {
-                    // This is a trick to continue updating the status bar after the user has done something.
-                    // It's needed for times when the OS takes a while to update its totals.
-                    tmrRamRefresh.Enabled = false;
-                    tmrRamRefresh.Enabled = true;
-                }
-                _ramString = newStatus;
                 // Signal the PictureBox to redraw itself.
                 pbxTopBar.Invalidate();
+
+                // Tell the timer to start counting if the form is still visible and active.
+                if (this.Visible && _activated)
+                {
+                    tmrRamRefresh.Enabled = true;
+                }
             }
             catch (ObjectDisposedException)
             {

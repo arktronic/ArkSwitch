@@ -29,7 +29,7 @@ namespace ArkSwitch
             {
                 _prevWndProc = prevWndProc;
                 _listView = listView;
-                _gch = GCHandle.Alloc(this);
+                _gch = GCHandle.Alloc(this, GCHandleType.Pinned);
                 SetWindowLong(listView.Parent.Handle, GWL_WNDPROC, WndProc);
             }
 

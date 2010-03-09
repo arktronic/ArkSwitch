@@ -128,11 +128,20 @@ namespace ArkSwitch.Forms
                                 }
                             }
                         }
-                        else if (Theming.ListItemBackgroundColor.HasValue)
+                        else // not selected
                         {
-                            using (var bg = new SolidBrush(Theming.ListItemBackgroundColor.Value))
+                            if (Theming.ListItemBackgroundImage != null)
                             {
-                                graphics.FillRectangle(bg, (int)rect.X, (int)rect.Y + 1, (int)rect.Width, (int)rect.Height - 1);
+                                // Draw the deselected rectangle image, since we have one.
+                                graphics.DrawImageAlphaChannel(Theming.ListItemBackgroundImage, new Rectangle((int)rect.X, (int)rect.Y + 1, (int)rect.Width, (int)rect.Height - 1));
+                            }
+                            else if (Theming.ListItemBackgroundColor.HasValue)
+                            {
+                                using (var bg = new SolidBrush(Theming.ListItemBackgroundColor.Value))
+                                {
+                                    // Draw the deselected rectangle solid color, since we have that, but no image.
+                                    graphics.FillRectangle(bg, (int)rect.X, (int)rect.Y + 1, (int)rect.Width, (int)rect.Height - 1);
+                                }
                             }
                         }
                         break;
