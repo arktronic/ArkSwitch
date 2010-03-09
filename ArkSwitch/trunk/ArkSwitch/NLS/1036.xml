@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArkSwitch version="1.1.1">
+<ArkSwitch version="1.1.2">
   <!-- Translation by crm4 on xda-developers -->
   <Page name="Main">
     <String name="Programs" value="Programmes:"/>
-    <String name="MemoryUsage" value="Utilisation mémoire: {0} ({1}%)"/>
     <String name="FreeTotalBar" value="{0} libre sur {1}"/>
     <String name="CloseAll" value="Tout fermer"/>
     <String name="Menu" value="Menu"/>
@@ -20,8 +19,8 @@
   <Page name="AppInfo">
     <String name="Title" value="Info App"/>
     <String name="LocatedIn" value="Emplacement:"/>
-    <String name="MemoryUsage" value="Utilisation mémoire:"/>
-    <String name="EfficiencyIndex" value="L'efficacité d'utilisation de la mémoire:"/>
+    <String name="NumberOfModules" value="Nombre de modules:"/>
+    <String name="NumberOfThreads" value="Nombre de fils d'exécution:"/>
     <String name="Exclude" value="Exclure..."/>
     <String name="Kill" value="Terminer"/>
     <String name="KillConfirmTitle" value="Forcer fermeture?"/>

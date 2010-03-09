@@ -15,8 +15,8 @@ namespace ArkSwitch.Forms
     public partial class InfoForm : Form
     {
         static readonly string LocatedInString = NativeLang.GetNlsString("AppInfo", "LocatedIn");
-        static readonly string MemoryUsageString = NativeLang.GetNlsString("AppInfo", "MemoryUsage");
-        static readonly string EfficiencyIndexString = NativeLang.GetNlsString("AppInfo", "EfficiencyIndex");
+        static readonly string NumModulesString = NativeLang.GetNlsString("AppInfo", "NumberOfModules");
+        static readonly string NumThreadsString = NativeLang.GetNlsString("AppInfo", "NumberOfThreads");
         static readonly Font MainFont = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Regular);
         static readonly Font SubFont = new Font(FontFamily.GenericSerif, 8, FontStyle.Regular);
         static readonly StringFormat DefaultStringFormat = new StringFormat(StringFormatFlags.NoWrap) { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
@@ -124,9 +124,9 @@ namespace ArkSwitch.Forms
             if (!loc.EndsWith(@"\")) loc += @"\";
             DrawStrings(e.Graphics, LocatedInString, loc, rect);
             rect.Y += rect.Height + 2;
-            DrawStrings(e.Graphics, MemoryUsageString, TaskMgmt.FormatMemoryString(_item.HeapSize), rect);
+            DrawStrings(e.Graphics, NumModulesString, TaskMgmt.Instance.GetProcessModules(_item.ProcessId).ToString(), rect);
             rect.Y += rect.Height + 2;
-            DrawStrings(e.Graphics, EfficiencyIndexString, CalculateEfficiencyIndex(), rect);
+            DrawStrings(e.Graphics, NumThreadsString, TaskMgmt.Instance.GetProcessThreads(_item.ProcessId).ToString(), rect);
         }
         #endregion
 
@@ -136,39 +136,6 @@ namespace ArkSwitch.Forms
             _item = item;
             // Redraw everything.
             Invalidate();
-        }
-
-        /// <summary>
-        /// This function calculates the efficiency index.
-        /// When I first wrote it, I thought it made a lot of sense. Now, I think it makes some sense, but not too much.
-        /// Memory management in WM6.x is interesting, especially concerning the application memory slots, so in the end,
-        /// it appears that most information about device memory is pretty useless.
-        /// Nevertheless, I'm keeping this here for now, as it is still an indicator of sorts about how an application
-        /// functions.
-        /// </summary>
-        /// <returns></returns>
-        string CalculateEfficiencyIndex()
-        {
-            var mods = TaskMgmt.Instance.GetProcessModules(_item.ProcessId);
-            int eff = 100;
-            foreach (var mod in mods)
-            {
-                var slot = TaskMgmt.Instance.GetSlotNumber(mod.BaseAddress);
-                if (slot >= 59)
-                {
-                    eff += (mod.GlobalUsage > 1 ? 5 : 1);
-                }
-                else if (slot == 1)
-                {
-                    eff += (mod.GlobalUsage > 1 ? 1 : -5);
-                }
-                else if (slot == 0)
-                {
-                    eff--;
-                }
-            }
-            eff = (int)(eff / (mods.Count / 10f));
-            return eff.ToString();
         }
 
         /// <summary>

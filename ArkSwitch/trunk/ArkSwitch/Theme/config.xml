@@ -1,7 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArkSwitchTheme version="1.0">
+<ArkSwitchTheme version="2.0">
+  
+  <!--
+  *** ABOUT RESOLUTION-AWARE IMAGES ***
+  
+  Each XML element below whose name ends with "DynamicImage" is intended for multi-resolution images.
+  When you have multiple images for different resolutions, you must specify the DPI, the horizontal resolution (HRES), or vertical resolution (VRES), as applicable.
+  For each *DynamicImage there is also a normal *Image element. This is used as a fallback, in case none of the provided images match the current device.
+  If specifying DPI, remember that QVGA and WQVGA have a DPI of 96, while VGA and WVGA have that of 192.
+  
+  To specify DPI, HRES, or VRES, simply include those names inside braces, like this: <BackgroundDynamicImage>MyImage.{HRES}.{VRES}.jpg</BackgroundDynamicImage>
+  You can specify any combination of those three keywords. On a VGA device, the above example will look for "MyImage.480.640.jpg".
+  
+  Another example: <XSelectedDynamicImage>x-selected-{DPI}.png</XSelectedDynamicImage>
+  On a QVGA device, the above will look for "x-selected-96.png".
+  
+  *** Important:
+  Dynamic images will always override non-dynamic ones!
+  -->
 
-  <!-- Required values: -->
+  <!-- *** REQUIRED ***
+  The following values are required, i.e., ArkSwitch will not run without them:
+  -->
 
   <StatusBarTextColorPrimary>230,230,230</StatusBarTextColorPrimary>
   <StatusBarTextColorSecondary>143,143,143</StatusBarTextColorSecondary>
@@ -19,13 +39,30 @@
   <AppInfoBackgroundColor>255,255,255</AppInfoBackgroundColor>
   <AppInfoDelimiterColor>241,241,241</AppInfoDelimiterColor>
 
-  <!-- Optional values: -->
+  <StatusBarBackgroundImage>status-bar.png</StatusBarBackgroundImage>
+  <XSelectedImage>x-selected.png</XSelectedImage>
+  <XDeselectedImage>x-deselected.png</XDeselectedImage>
+
+  <!-- *** OPTIONAL ***
+  The following values are NOT required, so they can be left blank if necessary:
+  -->
+  
+  <!-- The following three dynamic images override above required ones -->
+  <StatusBarBackgroundDynamicImage></StatusBarBackgroundDynamicImage>
+  <XSelectedDynamicImage></XSelectedDynamicImage>
+  <XDeselectedDynamicImage></XDeselectedDynamicImage>
 
   <ListItemBackgroundColor>255,255,255</ListItemBackgroundColor>
+  <ListItemBackgroundImage></ListItemBackgroundImage>
+  <ListItemBackgroundDynamicImage></ListItemBackgroundDynamicImage>
   <ListSelectionRectangleColor>220,240,255</ListSelectionRectangleColor>
   <ListSelectionRectangleImage></ListSelectionRectangleImage>
+  <ListSelectionRectangleDynamicImage></ListSelectionRectangleDynamicImage>
 
   <BackgroundImage></BackgroundImage>
+  <BackgroundDynamicImage></BackgroundDynamicImage>
+  
   <AppInfoBackgroundImage></AppInfoBackgroundImage>
+  <AppInfoBackgroundDynamicImage></AppInfoBackgroundDynamicImage>
 
 </ArkSwitchTheme>

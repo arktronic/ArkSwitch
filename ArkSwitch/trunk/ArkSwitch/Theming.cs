@@ -16,6 +16,9 @@ namespace ArkSwitch
 {
     static class Theming
     {
+        [System.Runtime.InteropServices.DllImport("coredll.dll")]
+        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
         static readonly string ThemeDirectory = Path.Combine(Misc.GetApplicationDirectory(), "Theme");
         static readonly string ConfigFile = Path.Combine(ThemeDirectory, "config.xml");
         static readonly IImagingFactory ImgFactory = ImagingFactory.GetImaging();
@@ -29,6 +32,7 @@ namespace ArkSwitch
                 throw new ApplicationException("FATAL INIT ERROR: Theme\\config.xml is missing.");
             }
             var xml = XElement.Load(ConfigFile);
+
             var data = "";
             // Required fields:
             data = GetXmlString(xml, "StatusBarTextColorPrimary");
@@ -54,36 +58,46 @@ namespace ArkSwitch
             data = GetXmlString(xml, "AppInfoDelimiterColor");
             if (!string.IsNullOrEmpty(data)) AppInfoDelimiterColor = GetColor(data); else throw new ApplicationException("AppInfoDelimiterColor not specified in theme config!");
 
+            // Required fields that don't throw errors because of legacy (v1.1.0 and v1.1.1) support. See below for code that sets them if blank.
+            data = ResolutionAwareGetImageFilename(xml, "StatusBarBackground");
+            if (!string.IsNullOrEmpty(data)) StatusBarImage = GetBitmap(data);
+            data = ResolutionAwareGetImageFilename(xml, "XSelected");
+            if (!string.IsNullOrEmpty(data)) XSelectedImage = GetIImage(data);
+            data = ResolutionAwareGetImageFilename(xml, "XDeselected");
+            if (!string.IsNullOrEmpty(data)) XDeselectedImage = GetIImage(data);
+
             // Optional fields:
-            data = GetXmlString(xml, "BackgroundImage");
+            data = ResolutionAwareGetImageFilename(xml, "Background");
             if (!string.IsNullOrEmpty(data)) BackgroundImage = GetBitmap(data);
             data = GetXmlString(xml, "ListItemBackgroundColor");
             if (!string.IsNullOrEmpty(data)) ListItemBackgroundColor = GetColor(data); else ListItemBackgroundColor = null;
+            data = ResolutionAwareGetImageFilename(xml, "ListItemBackground");
+            if (!string.IsNullOrEmpty(data)) ListItemBackgroundImage = GetIImage(data);
             data = GetXmlString(xml, "ListSelectionRectangleColor");
             if (!string.IsNullOrEmpty(data)) ListSelectionRectangleColor = GetColor(data); else ListSelectionRectangleColor = null;
-            data = GetXmlString(xml, "ListSelectionRectangleImage");
+            data = ResolutionAwareGetImageFilename(xml, "ListSelectionRectangle");
             if (!string.IsNullOrEmpty(data)) ListSelectionRectangleImage = GetIImage(data);
-            data = GetXmlString(xml, "AppInfoBackgroundImage");
+            data = ResolutionAwareGetImageFilename(xml, "AppInfoBackground");
             if (!string.IsNullOrEmpty(data)) AppInfoBackgroundImage = GetBitmap(data);
 
-            // Instantiate theme image(s).
-            StatusBarImage = (GetBitmap("status-bar.png") ?? GetBitmap("status-bar.gif")) ?? GetBitmap("status-bar.jpg");
+            // Instantiate old hardcoded theme images if they're null right now - this is to ensure that legacy themes still function.
+            StatusBarImage = StatusBarImage ?? (GetBitmap("status-bar.png") ?? GetBitmap("status-bar.gif")) ?? GetBitmap("status-bar.jpg");
             if (StatusBarImage == null) throw new ApplicationException("Status bar image is missing!");
 
-            XSelectedImage = (GetIImage("x-selected.png") ?? GetIImage("x-selected.gif")) ?? GetIImage("x-selected.jpg");
+            XSelectedImage = XSelectedImage ?? (GetIImage("x-selected.png") ?? GetIImage("x-selected.gif")) ?? GetIImage("x-selected.jpg");
             if (XSelectedImage == null) throw new ApplicationException("X selected image is missing!");
             ImageInfo info1;
             XSelectedImage.GetImageInfo(out info1);
             XSelectedImageSize = new Size((int)info1.Width, (int)info1.Height);
 
-            XDeselectedImage = (GetIImage("x-deselected.png") ?? GetIImage("x-deselected.gif")) ?? GetIImage("x-deselected.jpg");
+            XDeselectedImage = XDeselectedImage ?? (GetIImage("x-deselected.png") ?? GetIImage("x-deselected.gif")) ?? GetIImage("x-deselected.jpg");
             if (XDeselectedImage == null) throw new ApplicationException("X deselected image is missing!");
             ImageInfo info2;
             XDeselectedImage.GetImageInfo(out info2);
             XDeselectedImageSize = new Size((int)info2.Width, (int)info2.Height);
         }
 
-        #region Config XML properties
+        #region Config properties
         public static Color StatusBarTextColorPrimary { get; private set; }
         public static Color StatusBarTextColorSecondary { get; private set; }
         public static Color ListTextColorPrimary { get; private set; }
@@ -93,6 +107,7 @@ namespace ArkSwitch
         public static Color BackgroundColor { get; private set; }
         public static Bitmap BackgroundImage { get; private set; }
         public static Color? ListItemBackgroundColor { get; private set; }
+        public static IImage ListItemBackgroundImage { get; private set; }
         public static Color? ListSelectionRectangleColor { get; private set; }
         public static IImage ListSelectionRectangleImage { get; private set; }
         public static Color AppInfoTextColorPrimary { get; private set; }
@@ -114,8 +129,7 @@ namespace ArkSwitch
         {
             var configString = from str in xml.Descendants(name)
                                select str.Value;
-            if (configString.Count() > 0) return configString.First();
-            return "";
+            return configString.Count() > 0 ? configString.First() : "";
         }
 
         private static Color GetColor(string data)
@@ -139,6 +153,33 @@ namespace ArkSwitch
             }
         }
 
+        /// <summary>
+        /// This function returns a resolution-aware filename if available, or else the fallback one.
+        /// </summary>
+        /// <param name="xml">The XML data to look through.</param>
+        /// <param name="partialImageName">The name of the element(s), without the ending "Image" or "DynamicImage"</param>
+        /// <returns></returns>
+        private static string ResolutionAwareGetImageFilename(XElement xml, string partialImageName)
+        {
+            // First try the dynamic one.
+            var dynName = GetXmlString(xml, string.Concat(partialImageName, "DynamicImage"));
+            if (!string.IsNullOrEmpty(dynName))
+            {
+                dynName = Dynamize(dynName);
+                if (!dynName.Contains(Path.DirectorySeparatorChar)) dynName = Path.Combine(ThemeDirectory, dynName);
+                if (File.Exists(dynName)) return dynName;
+            }
+
+            // Now go with the fallback.
+            // It doesn't matter if this one exists because that check will be performed in the loading function.
+            return GetXmlString(xml, string.Concat(partialImageName, "Image"));
+        }
+
+        private static string Dynamize(string filename)
+        {
+            return filename.Replace(@"{DPI}", GetDpi().ToString()).Replace(@"{HRES}", GetHres().ToString()).Replace(@"{VRES}", GetVres().ToString());
+        }
+
         private static Bitmap GetBitmap(string filename)
         {
             if (!filename.Contains(Path.DirectorySeparatorChar)) filename = Path.Combine(ThemeDirectory, filename);
@@ -157,10 +198,24 @@ namespace ArkSwitch
                 var buf = new byte[st.Length];
                 st.Read(buf, 0, (int)st.Length);
                 ImgFactory.CreateImageFromBuffer(buf, (uint)buf.Length, BufferDisposalFlag.BufferDisposalFlagNone, out img);
-                buf = null;
             }
 
             return img;
+        }
+
+        private static int GetDpi()
+        {
+            return GetDeviceCaps(IntPtr.Zero, /*LOGPIXELSX*/88);
+        }
+
+        private static int GetHres()
+        {
+            return GetDeviceCaps(IntPtr.Zero, /*HORZRES*/8);
+        }
+
+        private static int GetVres()
+        {
+            return GetDeviceCaps(IntPtr.Zero, /*VERTRES*/10);
         }
     }
 }

@@ -226,46 +226,6 @@ namespace ArkSwitch
         }
 
         /// <summary>
-        /// Returns the amount of heap space the specified process is using.
-        /// </summary>
-        /// <param name="procId"></param>
-        /// <returns></returns>
-        uint GetProcessMemory(uint procId)
-        {
-            uint total = 0;
-            try
-            {
-                IntPtr hHeapSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPHEAPLIST, procId);
-                if (hHeapSnapshot != INVALID_HANDLE_VALUE)
-                {
-                    var heapList = new HEAPLIST32();
-                    heapList.dwSize = (uint)Marshal.SizeOf(heapList);
-                    if (Heap32ListFirst(hHeapSnapshot, ref heapList))
-                    {
-                        do
-                        {
-                            var entry = new HEAPENTRY32();
-                            entry.dwSize = (uint)Marshal.SizeOf(entry);
-                            if (Heap32First(hHeapSnapshot, ref entry, heapList.th32ProcessID, heapList.th32HeapID))
-                            {
-                                do
-                                {
-                                    total += entry.dwBlockSize;
-                                } while (Heap32Next(hHeapSnapshot, ref entry));
-                            }
-                        } while (Heap32ListNext(hHeapSnapshot, ref heapList));
-                    }
-                    CloseToolhelp32Snapshot(hHeapSnapshot);
-                }
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-            return total;
-        }
-
-        /// <summary>
         /// Returns a list of all appropriate tasks.
         /// </summary>
         /// <returns></returns>
@@ -288,7 +248,7 @@ namespace ArkSwitch
                         var cleanPath = path.ToLower().Trim();
                         if (!Program.ExcludedExes.Contains(cleanPath) && (!_exes.ContainsKey(cleanPath) || _exes[cleanPath] != window.Value) && cleanPath != @"\windows\gwes.exe" && cleanPath != @"\windows\shell32.exe")
                         {
-                            _tasks.Add(new TaskItem { Title = window.Value ?? "", HWnd = window.Key, ProcessId = curProc, HeapSize = GetProcessMemory(curProc), ExePath = path });
+                            _tasks.Add(new TaskItem { Title = window.Value ?? "", HWnd = window.Key, ProcessId = curProc, ExePath = path });
                             if(!_exes.ContainsKey(cleanPath)) _exes.Add(cleanPath, window.Value);
                         }
                     }
@@ -299,33 +259,101 @@ namespace ArkSwitch
         }
 
         /// <summary>
-        /// Returns a list of all modules used by the specified process.
+        /// Returns the number of running processes.
         /// </summary>
-        /// <param name="procId"></param>
         /// <returns></returns>
-        public List<TaskModule> GetProcessModules(uint procId)
+        public int GetNumProcesses()
         {
-            var mods = new List<TaskModule>();
+            var cnt = 0;
             try
             {
-                IntPtr hHeapSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, procId);
-                if (hHeapSnapshot != INVALID_HANDLE_VALUE)
+                var hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS | TH32CS_SNAPNOHEAPS, 0);
+                if (hSnapshot != INVALID_HANDLE_VALUE)
                 {
-                    var mod = new MODULEENTRY32();
-                    mod.dwSize = (uint)Marshal.SizeOf(mod);
-                    if (Module32First(hHeapSnapshot, ref mod))
+                    var proc = new PROCESSENTRY32();
+                    proc.dwSize = (uint)Marshal.SizeOf(proc);
+                    if (Process32First(hSnapshot, ref proc))
                     {
                         do
                         {
-                            mods.Add(new TaskModule(mod));
-                        } while (Module32Next(hHeapSnapshot, ref mod));
+                            cnt++;
+                        } while (Process32Next(hSnapshot, ref proc));
                     }
-                    CloseToolhelp32Snapshot(hHeapSnapshot);
+                    CloseToolhelp32Snapshot(hSnapshot);
                 }
             }
             catch (Exception)
             {
-                return new List<TaskModule>();
+                return 0;
+            }
+            return cnt;
+        }
+
+        /// <summary>
+        /// Returns the number of threads in the specified process.
+        /// </summary>
+        /// <param name="procId"></param>
+        /// <returns></returns>
+        public int GetProcessThreads(uint procId)
+        {
+            uint cnt = 0;
+            try
+            {
+                var hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS | TH32CS_SNAPNOHEAPS, 0);
+                if (hSnapshot != INVALID_HANDLE_VALUE)
+                {
+                    var proc = new PROCESSENTRY32();
+                    proc.dwSize = (uint)Marshal.SizeOf(proc);
+                    if (Process32First(hSnapshot, ref proc))
+                    {
+                        do
+                        {
+                            if(proc.th32ProcessID == procId)
+                            {
+                                // Found it!
+                                cnt = proc.cntThreads;
+                                break;
+                            }
+                        } while (Process32Next(hSnapshot, ref proc));
+                    }
+                    CloseToolhelp32Snapshot(hSnapshot);
+                }
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+            return (int)cnt;
+        }
+
+        /// <summary>
+        /// Returns the number of modules used by the specified process.
+        /// </summary>
+        /// <param name="procId"></param>
+        /// <returns></returns>
+        public int GetProcessModules(uint procId)
+        {
+            var mods = 0;
+            try
+            {
+                var hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, procId);
+                if (hSnapshot != INVALID_HANDLE_VALUE)
+                {
+                    var mod = new MODULEENTRY32();
+                    mod.dwSize = (uint)Marshal.SizeOf(mod);
+                    if (Module32First(hSnapshot, ref mod))
+                    {
+                        do
+                        {
+                            mods++;
+                        } while (Module32Next(hSnapshot, ref mod));
+                    }
+                    CloseToolhelp32Snapshot(hSnapshot);
+                }
+            }
+            catch (Exception)
+            {
+                return 0;
             }
             return mods;
         }

@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArkSwitch version="1.1.1">
+<ArkSwitch version="1.1.2">
   <!-- Translation by teorouge on xda-developers -->
   <Page name="Main">
     <String name="Programs" value="Programmi:"/>
-    <String name="MemoryUsage" value="Memoria in uso: {0} ({1}%)"/>
     <String name="FreeTotalBar" value="{0} su {1}"/>
     <String name="CloseAll" value="Chiudi Tutto"/>
     <String name="Menu" value="Menu"/>
@@ -20,8 +19,8 @@
   <Page name="AppInfo">
     <String name="Title" value="App Info"/>
     <String name="LocatedIn" value="In:"/>
-    <String name="MemoryUsage" value="Utilizzo Memoria (heap):"/>
-    <String name="EfficiencyIndex" value="Indice d'Efficienza:"/>
+    <String name="NumberOfModules" value="Numero di moduli:"/>
+    <String name="NumberOfThreads" value="Numero di thread di esecuzione:"/>
     <String name="Exclude" value="Escludi..."/>
     <String name="Kill" value="Forza chiusura"/>
     <String name="KillConfirmTitle" value="Forzare?"/>

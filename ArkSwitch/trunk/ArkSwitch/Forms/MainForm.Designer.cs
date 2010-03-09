@@ -140,7 +140,7 @@
             // 
             // tmrRamRefresh
             // 
-            this.tmrRamRefresh.Interval = 350;
+            this.tmrRamRefresh.Interval = 4000;
             this.tmrRamRefresh.Tick += new System.EventHandler(this.tmrRamRefresh_Tick);
             // 
             // pbxTopBar
@@ -162,6 +162,7 @@
             this.Menu = this.ArkMenu;
             this.Name = "MainForm";
             this.Text = "ArkSwitch";
+            this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.MainForm_Closing);
