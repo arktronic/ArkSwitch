@@ -101,7 +101,6 @@ namespace ArkSwitch.Forms
                 _firstStart = false;
 
                 // Task ListView...
-                lsvTasks.EnableDoubleBuffering();
                 lsvTasks.SetCustomHandling(out _handler);
                 lsvTasks.SetControlBorder(false);
                 lsvTasks.BackColor = Theming.BackgroundColor;
@@ -110,7 +109,6 @@ namespace ArkSwitch.Forms
                 _handler.ClickEvent += Handler_ClickEvent;
 
                 // Process ListView...
-                lsvProcesses.EnableDoubleBuffering();
                 lsvProcesses.SetCustomHandling(out _procHandler);
                 lsvProcesses.SetControlBorder(false);
                 lsvProcesses.BackColor = Theming.BackgroundColor;
