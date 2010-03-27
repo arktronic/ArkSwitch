@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArkSwitch version="1.1.2">
+<ArkSwitch version="1.1.3">
   <!-- Translation by mr.First on xda-developers -->
   <Page name="Main">
     <String name="Programs" value="Приложения:"/>
+    <String name="Processes" value="Процессы:"/>
+    <String name="Slot" value="Слот"/>
     <String name="FreeTotalBar" value="{0} свободно от {1}"/>
     <String name="CloseAll" value="Закр. все"/>
     <String name="Menu" value="Меню"/>
@@ -18,6 +20,7 @@
   </Page>
   <Page name="AppInfo">
     <String name="Title" value="Информация о программе"/>
+    <String name="Slot" value="Слот"/>
     <String name="LocatedIn" value="Находится в:"/>
     <String name="NumberOfModules" value="Количество модулей:"/>
     <String name="NumberOfThreads" value="Количество потоков:"/>

@@ -17,7 +17,8 @@ namespace ArkSwitch
         {
             private IntPtr _prevWndProc;
             private ListView _listView;
-            private GCHandle _gch;
+            private GCHandle _gch1, _gch2;
+            private WndProcDelegate _wndProc;
 
             public delegate void Draw(IntPtr hdc, int item, int subitem, bool selected, RectangleF rect);
             public delegate void Click(Point location, int item, int subitem);
@@ -29,8 +30,10 @@ namespace ArkSwitch
             {
                 _prevWndProc = prevWndProc;
                 _listView = listView;
-                _gch = GCHandle.Alloc(this, GCHandleType.Pinned);
-                SetWindowLong(listView.Parent.Handle, GWL_WNDPROC, WndProc);
+                _gch1 = GCHandle.Alloc(this, GCHandleType.Pinned);
+                _gch2 = GCHandle.Alloc(listView.Parent, GCHandleType.Pinned);
+                _wndProc = new WndProcDelegate(WndProc);
+                SetWindowLong(listView.Parent.Handle, GWL_WNDPROC, Marshal.GetFunctionPointerForDelegate(_wndProc));
             }
 
             /// <summary>
@@ -38,7 +41,8 @@ namespace ArkSwitch
             /// </summary>
             ~WndHandler()
             {
-                _gch.Free();
+                _gch1.Free();
+                _gch2.Free();
             }
 
             /// <summary>
@@ -66,7 +70,6 @@ namespace ArkSwitch
                                 break;
                         }
                     }
-
                 }
 
                 // Very important to continue on with event processing.
@@ -83,6 +86,7 @@ namespace ArkSwitch
                 var nmlv = (NMLISTVIEW)Marshal.PtrToStructure(lParam, typeof(NMLISTVIEW));
                 if (ClickEvent != null)
                     ClickEvent(new Point(nmlv.ptAction.x, nmlv.ptAction.y), nmlv.iItem, nmlv.iSubItem);
+                Marshal.DestroyStructure(lParam,typeof(NMLISTVIEW));
                 return IntPtr.Zero;
             }
 
@@ -129,6 +133,7 @@ namespace ArkSwitch
                         result = CDRF_DODEFAULT;
                         break;
                 }
+                Marshal.DestroyStructure(lParam, typeof(NMLVCUSTOMDRAW));
                 return (IntPtr)result;
             }
         }
@@ -175,6 +180,20 @@ namespace ArkSwitch
 
         }
 
+        /// <summary>
+        /// Enable double-buffering in the listview
+        /// *** This code is from a blog post by Alex Yakhnin.
+        /// </summary>
+        /// <param name="listView">ListView instance</param>
+        public static void EnableDoubleBuffering(this ListView listView)
+        {
+            // Retreive the current extended style
+            int currentStyle = SendMessage(listView.Handle, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+            // Assign the LVS_EX_DOUBLEBUFFER style 
+            SendMessage(listView.Handle, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, currentStyle | LVS_EX_DOUBLEBUFFER);
+        }
+
+
         public static void SetBackgroundImage(this ListView listView, Bitmap bmp)
         {
             var imgStruct = new LVBKIMAGE
@@ -203,7 +222,7 @@ namespace ArkSwitch
         private static extern int SendMessage(IntPtr hWnd, uint Msg, int wParam, ref LVBKIMAGE lParam);
 
         [DllImport("coredll.dll", SetLastError = true)]
-        static extern int SetWindowLong(IntPtr hWnd, int nIndex, WndProcDelegate newProc);
+        static extern int SetWindowLong(IntPtr hWnd, int nIndex, IntPtr newProc);
 
         [DllImport("coredll.dll", SetLastError = true)]
         static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
@@ -282,6 +301,7 @@ namespace ArkSwitch
         }
 
         const int LVS_EX_THEME = 0x02000000;
+        const int LVS_EX_DOUBLEBUFFER = 0x00010000;
 
         const int LVM_GETITEMRECT = 0x1000 + 14;
         const int LVM_SETEXTENDEDLISTVIEWSTYLE = 0x1000 + 54;

@@ -95,6 +95,7 @@ namespace ArkSwitch
         delegate int EnumWindowsProc(IntPtr hwnd, uint lParam);
         const int GWL_EXSTYLE = -20;
         const uint WS_EX_TOOLWINDOW = 0x0080;
+        private const int WM_GETTEXT = 0xD;
         static readonly StringBuilder WindowTextSb = new StringBuilder(1025);
 
         const uint TH32CS_SNAPHEAPLIST = 0x00000001;
@@ -160,6 +161,14 @@ namespace ArkSwitch
 
         [DllImport("coredll.dll")]
         static extern void GlobalMemoryStatus(ref MEMORYSTATUS lpBuffer);
+
+        [DllImport("coredll.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool SendMessageTimeout(IntPtr hWnd, int Msg, int wParam, StringBuilder lParam, int fuFlags, int uTimeout, out IntPtr lpdwResult);
+
+        [DllImport("coredll.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool SendMessageTimeout(IntPtr hWnd, uint Msg, int wParam, int lParam, int fuFlags, int uTimeout, out IntPtr lpdwResult);
         // ReSharper restore InconsistentNaming
         #endregion
 
@@ -198,8 +207,6 @@ namespace ArkSwitch
         static int EnumWindowsCallback(IntPtr hwnd, uint lParam)
         {
             // If the window doesn't match our criteria, continue enumerating immediately.
-            // Is not a child window.
-            if (GetParent(hwnd) != IntPtr.Zero) return 1;
             // Is visible.
             if (!IsWindowVisible(hwnd)) return 1;
             // Is not a tool window.
@@ -213,8 +220,10 @@ namespace ArkSwitch
             WindowTextSb.Remove(0, WindowTextSb.Length);
 
             // Get the window text or else continue enumerating.
-            if (!GetWindowText(hwnd, WindowTextSb, 1024)) return 1;
-            string text = WindowTextSb.ToString();
+            IntPtr res;
+            if (!SendMessageTimeout(hwnd, WM_GETTEXT, 1024, WindowTextSb, 0, 1000, out res)) return 1;
+
+            var text = WindowTextSb.ToString();
             if (string.IsNullOrEmpty(text)) return 1;
 
             // Add this entry to the Dictionary.
@@ -249,7 +258,7 @@ namespace ArkSwitch
                         if (!Program.ExcludedExes.Contains(cleanPath) && (!_exes.ContainsKey(cleanPath) || _exes[cleanPath] != window.Value) && cleanPath != @"\windows\gwes.exe" && cleanPath != @"\windows\shell32.exe")
                         {
                             _tasks.Add(new TaskItem { Title = window.Value ?? "", HWnd = window.Key, ProcessId = curProc, ExePath = path });
-                            if(!_exes.ContainsKey(cleanPath)) _exes.Add(cleanPath, window.Value);
+                            if (!_exes.ContainsKey(cleanPath)) _exes.Add(cleanPath, window.Value);
                         }
                     }
                 }
@@ -290,6 +299,37 @@ namespace ArkSwitch
         }
 
         /// <summary>
+        /// Returns all running processes.
+        /// </summary>
+        /// <returns></returns>
+        public List<ProcessItem> GetProcesses()
+        {
+            var processes = new List<ProcessItem>();
+            try
+            {
+                var hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS | TH32CS_SNAPNOHEAPS, 0);
+                if (hSnapshot != INVALID_HANDLE_VALUE)
+                {
+                    var proc = new PROCESSENTRY32();
+                    proc.dwSize = (uint)Marshal.SizeOf(proc);
+                    if (Process32First(hSnapshot, ref proc))
+                    {
+                        do
+                        {
+                            processes.Add(new ProcessItem { ExePath = GetProcessPathname(proc.th32ProcessID), ProcessId = proc.th32ProcessID, SlotNumber = GetAppSlotNumber(proc.th32MemoryBase), ExeFilename = proc.szExeFile });
+                        } while (Process32Next(hSnapshot, ref proc));
+                    }
+                    CloseToolhelp32Snapshot(hSnapshot);
+                }
+            }
+            catch (Exception)
+            {
+                return new List<ProcessItem>();
+            }
+            return processes;
+        }
+
+        /// <summary>
         /// Returns the number of threads in the specified process.
         /// </summary>
         /// <param name="procId"></param>
@@ -308,7 +348,7 @@ namespace ArkSwitch
                     {
                         do
                         {
-                            if(proc.th32ProcessID == procId)
+                            if (proc.th32ProcessID == procId)
                             {
                                 // Found it!
                                 cnt = proc.cntThreads;
@@ -359,6 +399,46 @@ namespace ArkSwitch
         }
 
         /// <summary>
+        /// Returns the calculated slot number of the specified memory address.
+        /// </summary>
+        /// <param name="memoryOffset"></param>
+        /// <returns></returns>
+        public int GetRawSlotNumber(uint memoryOffset)
+        {
+            return (int)(memoryOffset / 0x02000000);
+        }
+
+        /// <summary>
+        /// Returns the slot number corresponding to the 32 application slots.
+        /// </summary>
+        /// <param name="memoryOffset"></param>
+        /// <returns></returns>
+        public string GetAppSlotNumber(uint memoryOffset)
+        {
+            // Slot 0 has current process; 1 is ROM DLLs, 2 is first process.
+            // Let app slot 1 equal real slot 2.
+            var slot = GetRawSlotNumber(memoryOffset) - 1;
+            if (slot > 0 && slot < 33)
+            {
+                return slot.ToString();
+            }
+            return "*";
+        }
+
+        public static string FormatMemoryString(uint amt)
+        {
+            string unit = "";
+
+            if (amt >= 1024)
+            {
+                amt /= 1024;
+                unit = " K";
+            }
+
+            return String.Format("{0:N0}{1}", amt, unit);
+        }
+
+        /// <summary>
         /// Returns the full EXE pathname of the specified process.
         /// </summary>
         /// <param name="procId"></param>
@@ -376,7 +456,9 @@ namespace ArkSwitch
         /// <param name="hwnd"></param>
         public void CloseWindow(IntPtr hwnd)
         {
-            SendMessage(hwnd, WM_CLOSE, 0, 0);
+            IntPtr res;
+            // Wait 3000 ms (3 secs) to try and close it; then give up.
+            SendMessageTimeout(hwnd, WM_CLOSE, 0, 0, 0, 3000, out res);
         }
 
         /// <summary>
@@ -405,6 +487,28 @@ namespace ArkSwitch
             catch (Exception)
             {
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Gets the global memory status information for the device.
+        /// </summary>
+        /// <param name="total"></param>
+        /// <param name="free"></param>
+        public void GetMemoryStatus(out uint total, out uint free)
+        {
+            try
+            {
+                var mem = new MEMORYSTATUS();
+                mem.dwLength = (uint)Marshal.SizeOf(mem);
+                GlobalMemoryStatus(ref mem);
+                total = mem.dwTotalPhys;
+                free = mem.dwAvailPhys;
+            }
+            catch (Exception)
+            {
+                total = 0;
+                free = 0;
             }
         }
     }

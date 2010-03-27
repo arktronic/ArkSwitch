@@ -20,4 +20,17 @@ namespace ArkSwitch
             return Title;
         }
     }
+
+    class ProcessItem
+    {
+        public uint ProcessId { get; set; }
+        public string ExePath { get; set; }
+        public string ExeFilename { get; set; }
+        public string SlotNumber { get; set; }
+
+        public override string ToString()
+        {
+            return ExePath;
+        }
+    }
 }
