@@ -21,7 +21,9 @@ namespace ArkSwitch.Forms
         static readonly Font SubFont = new Font(FontFamily.GenericSerif, 8, FontStyle.Regular);
         static readonly StringFormat DefaultStringFormat = new StringFormat(StringFormatFlags.NoWrap) { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
 
-        TaskItem _item;
+        TaskItem _task;
+        ProcessItem _proc;
+        bool _processMode;
 
         public InfoForm()
         {
@@ -36,8 +38,8 @@ namespace ArkSwitch.Forms
         #region Event handling
         private void mnuExclude_Click(object sender, EventArgs e)
         {
-            if (_item == null) return;
-            var ex = new ExcludeNewForm { ExePathName = _item.ExePath };
+            if (_task == null) return;
+            var ex = new ExcludeNewForm { ExePathName = _task.ExePath };
             try
             {
                 if (ex.ShowDialog() == DialogResult.OK)
@@ -62,7 +64,7 @@ namespace ArkSwitch.Forms
         {
             if (MessageBox.Show(NativeLang.GetNlsString("AppInfo", "KillConfirmMsg"), NativeLang.GetNlsString("AppInfo", "KillConfirmTitle"), MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
-                TaskMgmt.Instance.KillProcess(_item.ProcessId);
+                TaskMgmt.Instance.KillProcess(_task.ProcessId);
                 Program.TheForm.RefreshData();
                 Close();
             }
@@ -84,7 +86,7 @@ namespace ArkSwitch.Forms
 
             // Draw the application's icon.
             var rect = new RectangleF(ClientSize.Width - 70, 6, 64, 75);
-            var icon = ExeIconMgmt.GetIconForExe(_item.ExePath, true);
+            var icon = ExeIconMgmt.GetIconForExe(_processMode ? _proc.ExePath : _task.ExePath, true);
             if (icon != null)
             {
                 if (icon.Height <= rect.Height && icon.Width <= rect.Width)
@@ -99,11 +101,21 @@ namespace ArkSwitch.Forms
             else
                 e.Graphics.DrawImageAlphaChannel(MainForm.NoIconImage, Misc.CalculateCenteredScaledDestRect(rect, MainForm.NoIconImageSize, false));
 
-            // Output the filename and window title.
+            // Initialize all the task or process strings that will be drawn.
+            var mainString = _processMode ? Path.GetFileName(_proc.ExePath) : Path.GetFileName(_task.ExePath);
+            var substring = _processMode
+                                ? string.Concat(NativeLang.GetNlsString("AppInfo", "Slot"), " ", _proc.SlotNumber)
+                                : _task.Title;
+            var location = Path.GetDirectoryName(_processMode ? _proc.ExePath : _task.ExePath);
+            var numModules = TaskMgmt.Instance.GetProcessModules(_processMode ? _proc.ProcessId : _task.ProcessId).ToString();
+            var numThreads = TaskMgmt.Instance.GetProcessThreads(_processMode ? _proc.ProcessId : _task.ProcessId).ToString();
+
+            // Output the filename and window title (or slot number in case of a raw process).
+
             rect.X = 6;
             rect.Width = ClientSize.Width - 70;
-            var mainStringSize = e.Graphics.MeasureString(Path.GetFileName(_item.ExePath), MainFont);
-            var subStringSize = e.Graphics.MeasureString(_item.Title, SubFont);
+            var mainStringSize = e.Graphics.MeasureString(mainString, MainFont);
+            var subStringSize = e.Graphics.MeasureString(substring, SubFont);
             var combinedHeight = mainStringSize.Height + subStringSize.Height + 1;
             var y = rect.Height / 2 - combinedHeight / 2 + rect.Y;
             var mainRect = new RectangleF(rect.X + 2, y, rect.Width - 2, mainStringSize.Height);
@@ -112,28 +124,36 @@ namespace ArkSwitch.Forms
             using (var brushSecondary = new SolidBrush(Theming.AppInfoTextColorSecondary))
             using (var pen = new Pen(Theming.AppInfoDelimiterColor, 2))
             {
-                e.Graphics.DrawString(Path.GetFileName(_item.ExePath), MainFont, brushPrimary, mainRect, DefaultStringFormat);
-                e.Graphics.DrawString(_item.Title, SubFont, brushSecondary, subRect, DefaultStringFormat);
+                e.Graphics.DrawString(mainString, MainFont, brushPrimary, mainRect, DefaultStringFormat);
+                e.Graphics.DrawString(substring, SubFont, brushSecondary, subRect, DefaultStringFormat);
                 e.Graphics.DrawLine(pen, 0, (int)rect.Y + (int)rect.Height + 7, ClientSize.Width, (int)rect.Y + (int)rect.Height + 7);
             }
 
             // Output the rest of the strings.
             rect.Y += 84;
             rect.Height = combinedHeight + 3;
-            var loc = Path.GetDirectoryName(_item.ExePath);
-            if (!loc.EndsWith(@"\")) loc += @"\";
-            DrawStrings(e.Graphics, LocatedInString, loc, rect);
+            if (!location.EndsWith(@"\")) location += @"\";
+            DrawStrings(e.Graphics, LocatedInString, location, rect);
             rect.Y += rect.Height + 2;
-            DrawStrings(e.Graphics, NumModulesString, TaskMgmt.Instance.GetProcessModules(_item.ProcessId).ToString(), rect);
+            DrawStrings(e.Graphics, NumModulesString, numModules, rect);
             rect.Y += rect.Height + 2;
-            DrawStrings(e.Graphics, NumThreadsString, TaskMgmt.Instance.GetProcessThreads(_item.ProcessId).ToString(), rect);
+            DrawStrings(e.Graphics, NumThreadsString, numThreads, rect);
         }
         #endregion
 
         #region Methods
         internal void PopulateTask(TaskItem item)
         {
-            _item = item;
+            _processMode = false;
+            _task = item;
+            // Redraw everything.
+            Invalidate();
+        }
+
+        internal void PopulateProc(ProcessItem item)
+        {
+            _processMode = true;
+            _proc = item;
             // Redraw everything.
             Invalidate();
         }

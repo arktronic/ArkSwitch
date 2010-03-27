@@ -82,34 +82,55 @@ namespace ArkSwitch
 
         private static string GetExeFromLnk(string lnkPathname)
         {
+            // Local vars.
+            string contents;
+
             if (!File.Exists(lnkPathname)) return null;
-            var reader = File.OpenText(lnkPathname);
-            var contents = reader.ReadLine();
-            reader.Close();
+
+            try
+            {
+                var reader = File.OpenText(lnkPathname);
+                contents = reader.ReadLine();
+                reader.Close();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            if(contents == null) return null;
             var splitLocation = contents.IndexOf('#');
             if (splitLocation < 1) return null;
-            var exe = contents.Substring(splitLocation + 1).Trim();
-            if (exe.StartsWith(":"))
+
+            try
             {
-                // It's some shell launching weirdness. Process it separately.
-                return GetShellRaiExe(exe);
+                var exe = contents.Substring(splitLocation + 1).Trim();
+                if (exe.StartsWith(":"))
+                {
+                    // It's some shell launching weirdness. Process it separately.
+                    return GetShellRaiExe(exe);
+                }
+                if (exe.StartsWith("\""))
+                {
+                    // Path contains spaces. Look for the closing quote. (Passed arguments would be after the closing quote anyway, so they are not a concern.)
+                    var closing = exe.IndexOf("\"", 1);
+                    if (closing < 2) return null;
+                    return exe.Substring(1, closing - 1);
+                }
+                // else...
+                // If there are any arguments being passed, they'd be after a space.
+                var delim = exe.IndexOf(' ');
+                if (delim > 0)
+                {
+                    return exe.Substring(0, delim);
+                }
+                // else...
+                return exe;
             }
-            if (exe.StartsWith("\""))
+            catch (Exception)
             {
-                // Path contains spaces. Look for the closing quote. (Passed arguments would be after the closing quote anyway, so they are not a concern.)
-                var closing = exe.IndexOf("\"", 1);
-                if (closing < 2) return null;
-                return exe.Substring(1, closing - 1);
+                return null;
             }
-            // else...
-            // If there are any arguments being passed, they'd be after a space.
-            var delim = exe.IndexOf(' ');
-            if (delim > 0)
-            {
-                return exe.Substring(0, delim);
-            }
-            // else...
-            return exe;
         }
 
         /// <summary>

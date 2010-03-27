@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArkSwitch version="1.1.2">
+<ArkSwitch version="1.1.3">
   <!--
   *** Translation instructions ***
   
@@ -13,6 +13,8 @@
   -->
   <Page name="Main">
     <String name="Programs" value="Programs:"/>
+    <String name="Processes" value="Processes:"/>
+    <String name="Slot" value="Slot"/>
     <String name="FreeTotalBar" value="{0} free out of {1}"/>
     <String name="CloseAll" value="Close All"/>
     <String name="Menu" value="Menu"/>
@@ -28,6 +30,7 @@
   </Page>
   <Page name="AppInfo">
     <String name="Title" value="App Info"/>
+    <String name="Slot" value="Slot"/>
     <String name="LocatedIn" value="Located in:"/>
     <String name="NumberOfModules" value="Number of modules:"/>
     <String name="NumberOfThreads" value="Number of threads:"/>

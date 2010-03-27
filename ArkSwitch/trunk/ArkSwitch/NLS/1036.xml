@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArkSwitch version="1.1.2">
+<ArkSwitch version="1.1.3">
   <!-- Translation by crm4 on xda-developers -->
   <Page name="Main">
     <String name="Programs" value="Programmes:"/>
+    <String name="Processes" value="Processus:"/>
+    <String name="Slot" value="Emplacement"/>
     <String name="FreeTotalBar" value="{0} libre sur {1}"/>
     <String name="CloseAll" value="Tout fermer"/>
     <String name="Menu" value="Menu"/>
@@ -18,6 +20,7 @@
   </Page>
   <Page name="AppInfo">
     <String name="Title" value="Info App"/>
+    <String name="Slot" value="Emplacement"/>
     <String name="LocatedIn" value="Emplacement:"/>
     <String name="NumberOfModules" value="Nombre de modules:"/>
     <String name="NumberOfThreads" value="Nombre de fils d'exécution:"/>

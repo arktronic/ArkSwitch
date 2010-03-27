@@ -46,6 +46,9 @@
             this.colX = new System.Windows.Forms.ColumnHeader();
             this.tmrRamRefresh = new System.Windows.Forms.Timer();
             this.pbxTopBar = new System.Windows.Forms.PictureBox();
+            this.lsvProcesses = new System.Windows.Forms.ListView();
+            this.colProcIcon = new System.Windows.Forms.ColumnHeader();
+            this.colProcText = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // ArkMenu
@@ -140,7 +143,7 @@
             // 
             // tmrRamRefresh
             // 
-            this.tmrRamRefresh.Interval = 800;
+            this.tmrRamRefresh.Interval = 4500;
             this.tmrRamRefresh.Tick += new System.EventHandler(this.tmrRamRefresh_Tick);
             // 
             // pbxTopBar
@@ -152,16 +155,43 @@
             this.pbxTopBar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbxTopBar.Paint += new System.Windows.Forms.PaintEventHandler(this.pbxTopBar_Paint);
             // 
+            // lsvProcesses
+            // 
+            this.lsvProcesses.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.lsvProcesses.Columns.Add(this.colProcIcon);
+            this.lsvProcesses.Columns.Add(this.colProcText);
+            this.lsvProcesses.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular);
+            this.lsvProcesses.FullRowSelect = true;
+            this.lsvProcesses.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lsvProcesses.Location = new System.Drawing.Point(82, 75);
+            this.lsvProcesses.Name = "lsvProcesses";
+            this.lsvProcesses.Size = new System.Drawing.Size(144, 179);
+            this.lsvProcesses.TabIndex = 1;
+            this.lsvProcesses.View = System.Windows.Forms.View.Details;
+            this.lsvProcesses.Visible = false;
+            // 
+            // colProcIcon
+            // 
+            this.colProcIcon.Text = "";
+            this.colProcIcon.Width = 70;
+            // 
+            // colProcText
+            // 
+            this.colProcText.Text = "Text";
+            this.colProcText.Width = 60;
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(240, 268);
+            this.Controls.Add(this.lsvProcesses);
             this.Controls.Add(this.pbxTopBar);
             this.Controls.Add(this.lsvTasks);
             this.Menu = this.ArkMenu;
             this.Name = "MainForm";
             this.Text = "ArkSwitch";
+            this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.Closing += new System.ComponentModel.CancelEventHandler(this.MainForm_Closing);
@@ -188,5 +218,8 @@
         private System.Windows.Forms.MenuItem mnuMenuActivationField;
         private System.Windows.Forms.Timer tmrRamRefresh;
         private System.Windows.Forms.PictureBox pbxTopBar;
+        private System.Windows.Forms.ListView lsvProcesses;
+        private System.Windows.Forms.ColumnHeader colProcIcon;
+        private System.Windows.Forms.ColumnHeader colProcText;
     }
 }
