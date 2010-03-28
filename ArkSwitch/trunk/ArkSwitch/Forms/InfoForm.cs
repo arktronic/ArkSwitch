@@ -62,12 +62,16 @@ namespace ArkSwitch.Forms
 
         private void mnuKill_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show(NativeLang.GetNlsString("AppInfo", "KillConfirmMsg"), NativeLang.GetNlsString("AppInfo", "KillConfirmTitle"), MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-            {
-                TaskMgmt.Instance.KillProcess(_task.ProcessId);
-                Program.TheForm.RefreshData();
-                Close();
-            }
+            if (MessageBox.Show(NativeLang.GetNlsString("AppInfo", "KillConfirmMsg"),
+                                NativeLang.GetNlsString("AppInfo", "KillConfirmTitle"), MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+                return;
+            Cursor.Current = Cursors.WaitCursor;
+            OpenNETCF.Windows.Forms.ApplicationEx.DoEvents();
+            TaskMgmt.Instance.KillProcess(_processMode ? _proc.ProcessId : _task.ProcessId);
+            Program.TheForm.RefreshData();
+            Cursor.Current = Cursors.Default;
+            Close();
         }
 
         private void InfoForm_Activated(object sender, EventArgs e)
@@ -145,6 +149,7 @@ namespace ArkSwitch.Forms
         internal void PopulateTask(TaskItem item)
         {
             _processMode = false;
+            mnuExclude.Enabled = true;
             _task = item;
             // Redraw everything.
             Invalidate();
@@ -153,6 +158,7 @@ namespace ArkSwitch.Forms
         internal void PopulateProc(ProcessItem item)
         {
             _processMode = true;
+            mnuExclude.Enabled = false;
             _proc = item;
             // Redraw everything.
             Invalidate();

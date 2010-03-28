@@ -164,6 +164,7 @@ namespace ArkSwitch.Forms
             // Change process mode and refresh.
             e.Handled = true;
             _processMode = !_processMode;
+            RefreshMenuStates();
             RefreshData();
         }
 
@@ -556,7 +557,7 @@ namespace ArkSwitch.Forms
 
         private void mnuKill_Click(object sender, EventArgs e)
         {
-            if (_processMode || lsvTasks.Items.Count < 1) return;
+            if (lsvTasks.Items.Count < 1) return;
             if (MessageBox.Show(NativeLang.GetNlsString("Main", "CloseAllMsg"), NativeLang.GetNlsString("Main", "CloseAllTitle"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
             {
                 for (int i = 0; i < lsvTasks.Items.Count; i++)
@@ -569,8 +570,6 @@ namespace ArkSwitch.Forms
 
         private void mnuMenuKill_Click(object sender, EventArgs e)
         {
-            if(_processMode) return;
-
             for (int i = 0; i < lsvTasks.SelectedIndices.Count; i++)
             {
                 CloseTask(lsvTasks.SelectedIndices[i], true);
@@ -579,8 +578,6 @@ namespace ArkSwitch.Forms
 
         private void mnuMenuSwitchTo_Click(object sender, EventArgs e)
         {
-            if (_processMode) return;
-
             if (lsvTasks.SelectedIndices.Count < 1) return;
             SwitchToTask(lsvTasks.SelectedIndices[0]);
         }
@@ -590,7 +587,7 @@ namespace ArkSwitch.Forms
             if(_processMode)
             {
                 if (lsvProcesses.SelectedIndices.Count < 1) return;
-                TaskDetails(lsvProcesses.SelectedIndices[0]);
+                ProcessDetails(lsvProcesses.SelectedIndices[0]);
             }
             else
             {
@@ -669,6 +666,28 @@ namespace ArkSwitch.Forms
             lsvProcesses.Columns[1].Width = lsvProcesses.Size.Width - lsvProcesses.Columns[0].Width - (_needScrollbar ? GetSystemMetrics(SM_CXVSCROLL) : 0) - 5;
         }
 
+        /// <summary>
+        /// Enables or disables certain menu items based on whether process mode is on.
+        /// </summary>
+        internal void RefreshMenuStates()
+        {
+            if(_processMode)
+            {
+                mnuKill.Enabled = false;
+                mnuMenuKill.Enabled = false;
+                mnuMenuSwitchTo.Enabled = false;
+            }
+            else
+            {
+                mnuKill.Enabled = true;
+                mnuMenuKill.Enabled = true;
+                mnuMenuSwitchTo.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Refreshes either the task or the process list, based on current mode.
+        /// </summary>
         internal void RefreshData()
         {
             // Refresh tasks.
@@ -715,6 +734,9 @@ namespace ArkSwitch.Forms
             RefreshSystemRamInfo();
         }
 
+        /// <summary>
+        /// Refreshes the slot/memory info bar.
+        /// </summary>
         internal void RefreshSystemRamInfo()
         {
             _showingSlots = !_showingSlots;
