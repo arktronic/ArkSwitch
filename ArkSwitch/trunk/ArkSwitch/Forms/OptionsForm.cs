@@ -192,7 +192,7 @@ namespace ArkSwitch.Forms
                     if (!File.Exists(path))
                     {
                         var sr = new StreamWriter(path, false);
-                        var app = "\"" + Misc.GetApplicationDirectory() + "\"";
+                        var app = "\"" + Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName + "\"";
                         sr.Write(app.Length + "#" + app);
                         sr.Flush();
                         sr.Close();
@@ -216,7 +216,7 @@ namespace ArkSwitch.Forms
                         if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
                         var sr = new StreamWriter(path, false);
-                        var app = "\"" + Misc.GetApplicationDirectory() + "\"";
+                        var app = "\"" + Assembly.GetExecutingAssembly().GetModules()[0].FullyQualifiedName + "\"";
                         sr.Write(app.Length + "#" + app);
                         sr.Flush();
                         sr.Close();
