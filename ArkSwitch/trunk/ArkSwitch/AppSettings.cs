@@ -85,6 +85,21 @@ namespace ArkSwitch
             return KeyPrimary.GetValue("OverrideLCID", System.Globalization.CultureInfo.CurrentCulture.LCID.ToString()).ToString();
         }
 
+        public static int GetActivationTimeout()
+        {
+            return (int) KeyPrimary.GetValue("ActivationTimeout", 300);
+        }
+
+        public static int GetKillTimeout()
+        {
+            return (int)KeyPrimary.GetValue("KillTimeout", 800);
+        }
+
+        public static bool GetConfirmCloseAll()
+        {
+            return ((int)KeyPrimary.GetValue("ConfirmCloseAll", 1) == 1);
+        }
+
         public static List<string> GetExcludedExes()
         {
             return new List<string>(KeyExeExcl.GetValueNames());

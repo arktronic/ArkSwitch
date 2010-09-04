@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ArkSwitch version="1.2.0">
+  <!-- Translation by Matthias Buss :-) -->
+  <Page name="Main">
+    <String name="Programs" value="Programme:"/>
+    <String name="Processes" value="Prozesse:"/>
+    <String name="Slot" value="Platz"/>
+    <String name="FreeTotalBar" value="{0} frei von {1}"/>
+    <String name="CloseAll" value="Alle beenden"/>
+    <String name="Menu" value="Menü"/>
+    <String name="MenuSwitchTo" value="Wechsel nach"/>
+    <String name="MenuCloseTask" value="Beende Task"/>
+    <String name="MenuTaskDetails" value="Task Details"/>
+    <String name="MenuOptions" value="Optionen"/>
+    <String name="MenuActivationField" value="Aktivierungsfeld einstellen"/>
+    <String name="MenuQuit" value="Beende ArkSwitch"/>
+    <String name="CloseAllTitle" value="Alle beenden?"/>
+    <String name="CloseAllMsg" value="Sind Sie sicher, dass Sie alle Programme beenden wollen?"/>
+    <String name="ActivationFieldNotAvailableMsg" value="Diese Aktion ist im WM6.5 Kompatibilitätsmodus nicht verfügbar."/>
+  </Page>
+  <Page name="AppInfo">
+    <String name="Title" value="Programm Informationen"/>
+    <String name="Slot" value="Platz"/>
+    <String name="LocatedIn" value="in:"/>
+    <String name="NumberOfModules" value="Anzahl Module:"/>
+    <String name="NumberOfThreads" value="Anzahl Threads:"/>
+    <String name="Exclude" value="Ausnahmen..."/>
+    <String name="Kill" value="Beenden"/>
+    <String name="KillConfirmTitle" value="Ende erzwingen?"/>
+    <String name="KillConfirmMsg" value="Es kann problematisch werden, wenn Sie Prozesse beenden. Sind Sie wirklich sicher?"/>
+  </Page>
+  <Page name="ExcludeEXE">
+    <String name="Title" value="Ausnahme EXE"/>
+    <String name="ExplanationText" value="Bitte geben Sie den vollständigen Pfad und den Dateinahmen des zu versteckenden Programms ein. Alle Fenster dieser Prozesse werden von ArkSwitch nicht mehr angezeigt."/>
+    <String name="OK" value="OK"/>
+    <String name="Cancel" value="Abbruch"/>
+  </Page>
+  <Page name="Options">
+    <String name="Title" value="Optionen"/>
+    <String name="RunAtBoot" value="Mit Windows starten"/>
+    <String name="StartMenuIcons" value="Zeige Programmsymbole an"/>
+    <String name="ToolsShortcut" value="Programmsymbol in Tools"/>
+    <String name="WM65Compat" value="WM6.5 Kompatibilität"/>
+    <String name="Exclusions" value="Ausnahmen"/>
+    <String name="WM65Warning" value="In diesem Modus ist ArkSwitch nicht durch Anklicken der Status-Leiste verfügbar!"/>
+    <String name="RestartChanges" value="Zum Aktivieren dieser Äenderung müssen Sie ArkSwitch neu starten."/>
+  </Page>
+  <Page name="Exclusions">
+    <String name="Title" value="Ausnahmen"/>
+    <String name="AddNew" value="Hinzufügen"/>
+    <String name="Remove" value="Entfernen"/>
+  </Page>
+  <Page name="ActivationRelocation">
+    <String name="Title" value="Ak-Feld einstellen"/>
+    <String name="Save" value="speichern"/>
+    <String name="Discard" value="Abbruch"/>
+  </Page>
+</ArkSwitch>
