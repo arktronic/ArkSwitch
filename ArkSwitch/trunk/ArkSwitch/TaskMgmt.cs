@@ -151,6 +151,8 @@ namespace ArkSwitch
         static extern int SendMessage(IntPtr hWnd, uint uMsg, int wParam, int lParam);
         [DllImport("coredll.dll")]
         static extern int SetForegroundWindow(IntPtr hWnd);
+        [DllImport("coredll.dll")]
+        static extern IntPtr GetForegroundWindow();
 
         [DllImport("coredll.dll")]
         static extern IntPtr OpenProcess(int fdwAccess, bool fInherit, uint IDProcess);
@@ -211,7 +213,7 @@ namespace ArkSwitch
             if (!IsWindowVisible(hwnd)) return 1;
             // Is not a tool window.
             if ((GetWindowLong(hwnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW) != 0) return 1;
-            // Is not the main dekstop window.
+            // Is not the main desktop window.
             if (hwnd == GetDesktopWindow()) return 1;
             // Is not the main window of this app.
             if (hwnd == Program.TheForm.Handle) return 1;
@@ -483,6 +485,43 @@ namespace ArkSwitch
                 if (handle == INVALID_HANDLE_VALUE) return;
                 TerminateProcess(handle, 1);
                 CloseHandle(handle);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Closes the current foreground window, politely.
+        /// </summary>
+        public void CloseForegroundWindow()
+        {
+            try
+            {
+                var hwnd = GetForegroundWindow();
+
+                while (true)
+                {
+                    // Invisible = bad.
+                    if (!IsWindowVisible(hwnd)) return;
+                    // Tool window = bad.
+                    if ((GetWindowLong(hwnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW) != 0)
+                    {
+                        // Try to get its parent instead.
+                        hwnd = GetParent(hwnd);
+                        if (hwnd == IntPtr.Zero) return;
+                        continue;
+                    }
+                    // Main desktop window = bad.
+                    if (hwnd == GetDesktopWindow()) return;
+                    // ArkSwitch itself = bad.
+                    if (hwnd == Program.TheForm.Handle) return;
+
+                    // We have a proper window!
+                    CloseWindow(hwnd);
+                    return;
+                }
             }
             catch (Exception)
             {

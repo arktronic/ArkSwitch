@@ -82,15 +82,18 @@ LRESULT CALLBACK WindowProc (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 			// else...
 			return CallWindowProc(_oldProc,hwnd,msg,wParam,lParam);
+		case WM_LBUTTONUP:
 		case WM_LBUTTONDOWN:
 		case WM_MOUSEMOVE:
-			if(!_relocationMode && (unsigned int)GET_X_LPARAM(lParam) >= _minX && (unsigned int)GET_X_LPARAM(lParam) <= _maxX) {
-				_callback->EventType = (msg == WM_LBUTTONDOWN ? 1 : 2);
-				_callback->X = GET_X_LPARAM(lParam);
-				_callback->Y = GET_Y_LPARAM(lParam);
-				PostMessage(_callback->FwdWindow, 0x404, 1, 1);
+			if(!_relocationMode) {
+				if((unsigned int)GET_X_LPARAM(lParam) >= _minX && (unsigned int)GET_X_LPARAM(lParam) <= _maxX) {
+					_callback->EventType = (msg == WM_LBUTTONUP ? 1 : (msg == WM_LBUTTONDOWN ? 2 : 3));
+					_callback->X = GET_X_LPARAM(lParam);
+					_callback->Y = GET_Y_LPARAM(lParam);
+					PostMessage(_callback->FwdWindow, 0x404, 1, 1);
 
-				return 0;
+					return 0;
+				}
 			}
 			return CallWindowProc(_oldProc,hwnd,msg,wParam,lParam);
 			break;

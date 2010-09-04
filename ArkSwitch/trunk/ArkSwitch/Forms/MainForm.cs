@@ -557,8 +557,13 @@ namespace ArkSwitch.Forms
 
         private void mnuKill_Click(object sender, EventArgs e)
         {
-            if (lsvTasks.Items.Count < 1) return;
-            if (MessageBox.Show(NativeLang.GetNlsString("Main", "CloseAllMsg"), NativeLang.GetNlsString("Main", "CloseAllTitle"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+            if (lsvTasks.Items.Count < 1)
+            {
+                Visible = false;
+                return;
+            }
+
+            if (!AppSettings.GetConfirmCloseAll() || MessageBox.Show(NativeLang.GetNlsString("Main", "CloseAllMsg"), NativeLang.GetNlsString("Main", "CloseAllTitle"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
             {
                 for (int i = 0; i < lsvTasks.Items.Count; i++)
                     CloseTask(i, false);

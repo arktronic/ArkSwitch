@@ -12,12 +12,18 @@ using System.Threading;
 using System.Windows.Forms;
 using ArkSwitch.Forms;
 using Microsoft.WindowsCE.Forms;
+using Timer = System.Threading.Timer;
 
 namespace ArkSwitch
 {
     static class Program
     {
         const string MSG_WINDOW_TEXT = "Reverse engineering Arktronic's apps is extremely lame. #ArkSwitch"; // I wonder if anyone's ever noticed this in Remote Spy...
+
+        private static DateTime _activationStart = DateTime.MinValue;
+        private static Timer _activationTimer;
+        private static int _activationTimeout;
+        private static int _killTimeout;
 
         internal static ProcessEvents ProcessEventsInstance = new ProcessEvents();
         internal static GCHandle Handle;
@@ -59,6 +65,9 @@ namespace ArkSwitch
             // Set the current version.
             AppSettings.SetAppVersion();
 
+            _activationTimeout = AppSettings.GetActivationTimeout();
+            _killTimeout = AppSettings.GetKillTimeout();
+
             ExcludedExes = AppSettings.GetExcludedExes();
             if (ExcludedExes.Count < 1) SetDefaultExcludedExes();
 
@@ -98,23 +107,71 @@ namespace ArkSwitch
         public static extern int SetActivationFieldRelocationMode(bool isOn);
         #endregion
 
+        private static void ActivationTimerExpired(object state)
+        {
+            try
+            {
+                if (TheForm == null)
+                    TheForm = new MainForm();
+
+                if(TheForm.InvokeRequired)
+                {
+                    TheForm.Invoke(new Action<object>(ActivationTimerExpired), new object());
+                    return;
+                }
+
+                lock(InteropLockObj)
+                {
+                    if(_activationTimer == null) return;
+
+                    // Activate.
+                    TheForm.Visible = true;
+                    TheForm.BringToFront();
+                    TheForm.Activate();
+
+                    OpenNETCF.Windows.Forms.ApplicationEx.DoEvents();
+                    TheForm.Invoke(new Action(TheForm.RefreshData));
+
+                    _activationTimer.Dispose();
+                    _activationTimer = null;
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
         public static void Notify()
         {
             if(IsShowingDialog) return;
 
             lock(InteropLockObj)
             {
-                if(TheForm == null)
-                    TheForm = new MainForm();
-
-                TheForm.Visible = true;
-                TheForm.BringToFront();
-                TheForm.Activate();
-
-                if(ProcessEventsInstance.EventType == 1)
+                if (ProcessEventsInstance.EventType == 3)
                 {
-                    OpenNETCF.Windows.Forms.ApplicationEx.DoEvents();
-                    TheForm.Invoke(new Action(TheForm.RefreshData));
+                    // 3 is mouse movement inside a valid location.
+                    // We must either postpone activation, or proceed with the kill.
+                    if (_activationTimer != null && _activationStart.AddMilliseconds(_killTimeout) < DateTime.Now)
+                    {
+                        // Kill.
+                        TaskMgmt.Instance.CloseForegroundWindow();
+                        _activationTimer.Dispose();
+                        _activationTimer = null;
+                        return;
+                    }
+                    // Else...
+                    if (_activationTimer != null)
+                        _activationTimer.Change(_activationTimeout, Timeout.Infinite);
+                    return;
+                }
+
+                if(ProcessEventsInstance.EventType == 2)
+                {
+                    // 2 is mouse down. Start activation timer.
+                    _activationStart = DateTime.Now;
+                    _activationTimer = new Timer(ActivationTimerExpired, null, _activationTimeout, Timeout.Infinite);
+                    return;
                 }
             }
         }

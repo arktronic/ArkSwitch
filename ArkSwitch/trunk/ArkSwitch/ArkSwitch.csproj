@@ -152,6 +152,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Images\checkmark.gif" />
     <None Include="Microsoft.WindowsMobile.Gestures.dll" />
+    <Content Include="NLS\1031.xml" />
     <Content Include="NLS\1033.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
